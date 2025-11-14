@@ -335,7 +335,7 @@
   const MQTT_TOPIC = "aircraft/OMRJ/telemetry";
 
   const client = mqtt.connect(MQTT_URL, {
-    username: "yousef",        // same as Python (dangerous on public web!)
+    username: "Tracker",        // same as Python (dangerous on public web!)
     password: "Lenovo@2007",   // same as Python
     clientId: "ground-station-web-" + Math.random().toString(16).slice(2, 10),
     clean: true,
@@ -443,3 +443,4 @@
 </script>
 </body>
 </html>
+
