@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Jazirah Club Traffic - OMRJ V2.0 (Web)</title>
+  <title>Jazirah Club Traffic - OMRJ V2.0</title>
 
   <!-- Leaflet CSS -->
   <link
@@ -160,7 +160,7 @@
     <h3>Status</h3>
     <div id="status-text">No Signal</div>
 
-    <div id="footer">Jazirah Club V2.0 (Web)</div>
+    <div id="footer">Jazirah Club V2.0</div>
   </div>
 
   <!-- Map -->
@@ -275,7 +275,7 @@
 
   function redrawLabel() {
     let qnh = parseFloat(qnhInput.value);
-    if (isNaN(qnh)) qnh = 1013.0;
+    if (isNaN(qnh)) qnh = 1013.25;
 
     const altFt = altitudeFromPressure(lastPressure, qnh);
 
@@ -457,3 +457,4 @@
 </script>
 </body>
 </html>
+
