@@ -153,6 +153,8 @@
     <label><input type="checkbox" id="show-alt" checked> Altitude</label>
     <label><input type="checkbox" id="show-hdg" checked> Heading</label>
     <label><input type="checkbox" id="show-temp" checked> Temperature</label>
+    <!-- NEW: Follow-Me checkbox -->
+    <label><input type="checkbox" id="follow-me"> Follow-Me</label>
 
     <!-- Status -->
     <h3>Status</h3>
@@ -254,13 +256,14 @@
 
   let followEnabled = false;
 
-  const qnhInput   = document.getElementById('qnh-input');
-  const showRegBox = document.getElementById('show-reg');
-  const showSpdBox = document.getElementById('show-spd');
-  const showAltBox = document.getElementById('show-alt');
-  const showHdgBox = document.getElementById('show-hdg');
-  const showTempBox= document.getElementById('show-temp');
-  const statusText = document.getElementById('status-text');
+  const qnhInput     = document.getElementById('qnh-input');
+  const showRegBox   = document.getElementById('show-reg');
+  const showSpdBox   = document.getElementById('show-spd');
+  const showAltBox   = document.getElementById('show-alt');
+  const showHdgBox   = document.getElementById('show-hdg');
+  const showTempBox  = document.getElementById('show-temp');
+  const followMeBox  = document.getElementById('follow-me'); // NEW
+  const statusText   = document.getElementById('status-text');
 
   function altitudeFromPressure(p_hpa, qnh_hpa) {
     // Same formula as your Python: 44330*(1-(p/qnh)^0.1903) in meters, then ft
@@ -299,6 +302,22 @@
       el.addEventListener('change', redrawLabel);
     });
 
+  // NEW: Follow-Me checkbox logic
+  followMeBox.addEventListener('change', () => {
+    followEnabled = followMeBox.checked;
+
+    // If we have GPS and follow is turned on, immediately pan once
+    if (followEnabled && lastHasGPS && lastLat !== null && lastLon !== null) {
+      map.panTo([lastLat, lastLon]);
+    }
+
+    // Update status text same way as 'G' key does
+    if (!statusText.textContent.startsWith('No Signal')) {
+      statusText.textContent = 'Connected' + (followEnabled ? ' (Following)' : '');
+      statusText.style.color = 'lime';
+    }
+  });
+
   // Status updates (watchdog, same 2s timeout)
   setInterval(() => {
     const now = Date.now() / 1000;
@@ -315,6 +334,9 @@
   window.addEventListener('keydown', (ev) => {
     if (ev.key === 'g' || ev.key === 'G') {
       followEnabled = !followEnabled;
+      // keep checkbox in sync
+      followMeBox.checked = followEnabled;
+
       if (!statusText.textContent.startsWith('No Signal')) {
         statusText.textContent = 'Connected' + (followEnabled ? ' (Following)' : '');
         statusText.style.color = 'lime';
@@ -323,14 +345,6 @@
   });
 
   // ========= MQTT over WebSocket (HiveMQ Cloud) =========
-  //
-  // Python code:
-  //   host = "1c23734948264e8cbc15a03ab2e7e8dc.s1.eu.hivemq.cloud"
-  //   port = 8883 (TLS TCP)
-  //
-  // Browser needs WebSocket TLS:
-  //   wss://host:8884/mqtt
-  //
   const MQTT_URL   = "wss://1c23734948264e8cbc15a03ab2e7e8dc.s1.eu.hivemq.cloud:8884/mqtt";
   const MQTT_TOPIC = "aircraft/OMRJ/telemetry";
 
@@ -443,5 +457,3 @@
 </script>
 </body>
 </html>
-
-
